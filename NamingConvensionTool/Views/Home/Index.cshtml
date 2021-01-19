@@ -1,0 +1,198 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+            .tooltip .tooltiptext {
+                visibility: hidden;
+                width: 140px;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px;
+                position: absolute;
+                z-index: 1;
+                bottom: 150%;
+                left: 50%;
+                margin-left: -75px;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+                .tooltip .tooltiptext::after {
+                    content: "";
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: #555 transparent transparent transparent;
+                }
+
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
+         
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<h1 class="text-uppercase" style="color:#808080">Name Generator</h1>
+
+<div class="row">
+    <div class="col-sm-4" style="border-radius: 10px; background: #f6ffe9; padding: 10px;">
+
+        <div class="form-group focused">
+            @Html.Label("Unique Name")
+            <input class="form-control" type="text" id="input" name="input" value="" placeholder="Unique Name">
+        </div>
+        <div class="form-group focused">
+            @Html.Label("Region")
+            @Html.DropDownList("ddlCountryList", new SelectList(ViewBag.CountryList, "Value", "Text"), "-- Select Coutry --", new { @class = "form-control" })
+        </div>
+        @Html.Label("Environment")
+        <div class="form-group focused" style="padding:20px; border:1px solid #ddd; border-radius:10px;">
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <input type="checkbox" id="Prod" name="Prod" value="Prod" class="check chk">
+                    <label for="Prod"> Prod</label>
+                </div>
+                <div class="col-sm-6">
+                    <input type="checkbox" id="Dev" name="Dev" value="Dev" class="check chk">
+                    <label for="Dev"> Dev</label><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <input type="checkbox" id="Term" name="Term" value="Term" class="check chk">
+                    <label for="Term"> Term</label><br>
+                </div>
+                <div class="col-sm-6">
+                    <input type="checkbox" id="Stage" name="Stage" value="Stage" class="check chk">
+                    <label for="Stage"> Stage</label><br>
+                </div>
+            </div>
+        </div>
+        <div class="form-group focused">
+            @Html.Label("Prefix")
+            <input class="form-control" type="text" id="prefix" name="prefix" value="" placeholder="Prefix">
+        </div>
+        <div class="row form-group focused">
+            <div class="col-sm-6">
+                @Html.Label("Starting Numeral")
+                <input class="form-control" type="number" id="fromNumber" name="fromNumber" value="1" placeholder="Start Serial">
+            </div>
+            <div class="col-sm-6">
+                @Html.Label("Ending Numeral")
+                <input class="form-control" type="number" id="toNumber" name="toNumber" value="100" placeholder="End Serial">
+            </div>
+        </div>
+        <div class="form-group focused">
+            <input type="button" id="btnGenerateSerialNumber" value="Generate Name" class="btn btn-success btn-sm form-control" />
+        </div>
+    </div>
+    <div class="col-sm-1"></div>
+    <div class="col-sm-7" style="border-radius: 10px; background: #fff; border:2px solid #ccc; padding: 10px;  overflow:auto; height:450px;">
+        <table id="tblGeneratedSerial" class="table table-hover table-striped" style="">
+            <thead>
+                <tr>
+                    <th>
+                        Serial
+                    </th>
+                    <th>
+                        <div style='float:right; margin-right:20px;'>Copy</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        var val = $(element).attr("value");
+        $temp.val(val).select();
+        document.execCommand("copy");
+        $temp.remove();
+
+        var tooltip = document.getElementById(element.id);
+        tooltip.innerHTML = "Copied";
+        tooltip.style = "float:right; margin-right:20px;background-color: #4cb145;"
+
+    }
+    $(document).ready(function () {
+        $(".check").on("change", function () {
+            $('input:checkbox').not(this).prop('checked', false);
+        });
+        $("#btnGenerateSerialNumber").on("click", function () {
+            $("#tblGeneratedSerial > tbody").html("");
+
+            var input = $("#input").val();
+            var countryId = $("#ddlCountryList").val();
+            var type = "";
+            $('input:checkbox.chk').each(function () {
+                var sThisVal = (this.checked ? $(this).val() : "");
+                if (this.checked) {
+                    type = sThisVal;
+                }
+
+            });
+            var prefix = $("#prefix").val();
+            var fromNumber = parseInt($("#fromNumber").val());
+            var toNumber = parseInt($("#toNumber").val());
+            if (fromNumber > toNumber) {
+                alert("Sorry Start Serial is Bigger than End Serial.");
+                return false;
+            }
+            var i;
+            for (i = fromNumber; i <= toNumber; i++) {
+                var string = "";
+
+                if (prefix != "") {
+                    string += prefix + "-";
+                }
+
+                if (input != "") {
+                    string += input + "-";
+                }
+                if (countryId != "") {
+                    string += countryId + "-";
+                }
+                if (type != "") {
+                    string += type + "-";
+                }
+                string += i;
+                var id = 'btnCopyId' + i + '';/* style = 'float:right; margin-right:20px;'*/
+                $("#tblGeneratedSerial>tbody").append("<tr><td>" + string + "</td><td><span  style='float:right; margin-right:20px; background-color: #45b1a7;' onclick='copyToClipboard(" + id + ")' id=" + id + " value=" + string + " class='badge badge-secondary'>Copy</span></td></tr>");
+            }
+
+        });
+        $("#tblGeneratedSerial").on("click", "#btnCopy", function () {  
+            var copiedVal = $(this).closest("tr").find("td:eq(0)").html();
+            copiedVal.select();
+            copyText.setSelectionRange(0, 99999)
+            document.execCommand("copy"); 
+        });
+    });
+</script>
+
+
+

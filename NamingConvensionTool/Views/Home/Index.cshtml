@@ -55,12 +55,12 @@
     <div class="col-sm-4" style="border-radius: 10px; background: #f6ffe9; padding: 10px;">
 
         <div class="form-group focused">
-            @Html.Label("Unique Name")
-            <input class="form-control" type="text" id="input" name="input" value="" placeholder="Unique Name">
+            @Html.Label("Unique Value")
+            <input class="form-control" type="text" id="input" name="input" value="" placeholder="Unique Value">
         </div>
         <div class="form-group focused">
             @Html.Label("Region")
-            @Html.DropDownList("ddlCountryList", new SelectList(ViewBag.CountryList, "Value", "Text"), "-- Select Coutry --", new { @class = "form-control" })
+            @Html.DropDownList("ddlCountryList", new SelectList(ViewBag.CountryList, "Value", "Text"), "-- Select Region --", new { @class = "form-control" })
         </div>
         @Html.Label("Environment")
         <div class="form-group focused" style="padding:20px; border:1px solid #ddd; border-radius:10px;">
@@ -77,8 +77,8 @@
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    <input type="checkbox" id="Term" name="Term" value="Term" class="check chk">
-                    <label for="Term"> Term</label><br>
+                    <input type="checkbox" id="Sandbox" name="Sandbox" value="snd" class="check chk">
+                    <label for="Sandbox"> Term</label><br>
                 </div>
                 <div class="col-sm-6">
                     <input type="checkbox" id="Stage" name="Stage" value="Stage" class="check chk">
